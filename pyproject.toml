@@ -1,0 +1,30 @@
+[project]
+name = "patchbay-workspace"
+version = "0.1.0"
+description = "Open-source, Python-first plugin ecosystem"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/patchbay-sdk", "packages/patchbay-core", "packages/patchbay-cli"]
+
+[tool.uv.sources]
+patchbay-sdk = { workspace = true }
+patchbay-core = { workspace = true }
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
