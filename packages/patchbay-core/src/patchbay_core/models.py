@@ -1,5 +1,4 @@
 """Validated plugin manifest models."""
-
 from pathlib import Path
 from typing import Any
 
@@ -25,7 +24,6 @@ class EntrypointSpec(BaseModel):
 
 class PluginManifest(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
     schema_version: str = "1.0"
     id: str = Field(pattern=r"^[a-z0-9][a-z0-9.-]*$")
     name: str = Field(min_length=1, max_length=100)
@@ -33,12 +31,12 @@ class PluginManifest(BaseModel):
     description: str = ""
     author: str = ""
     license: str = ""
-    runtime: RuntimeSpec = RuntimeSpec()
+    runtime: RuntimeSpec = Field(default_factory=RuntimeSpec)
     host: HostSpec
-    entrypoint: EntrypointSpec = EntrypointSpec()
-    capabilities: list[str] = []
-    dependencies: list[str] = []
-    configuration: dict[str, Any] = {}
+    entrypoint: EntrypointSpec = Field(default_factory=EntrypointSpec)
+    capabilities: list[str] = Field(default_factory=list)
+    dependencies: list[str] = Field(default_factory=list)
+    configuration: dict[str, Any] = Field(default_factory=dict)
 
     def resolve_entrypoint(self, plugin_dir: Path) -> Path:
         """Resolve entrypoint while rejecting traversal and symlink escapes."""
