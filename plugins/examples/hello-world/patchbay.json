@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "id": "org.patchbay.examples.hello-world",
+  "name": "Hello World",
+  "version": "1.0.0",
+  "description": "A minimal Patchbay example plugin.",
+  "author": "Patchbay Community",
+  "license": "Apache-2.0",
+  "runtime": {"language": "python", "minimum_version": "3.12"},
+  "host": {"api_version": "1.0"},
+  "entrypoint": {"file": "plugin.py", "class": "HelloWorldPlugin"},
+  "capabilities": [],
+  "dependencies": [],
+  "configuration": {}
+}
