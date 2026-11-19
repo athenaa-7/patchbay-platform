@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "patchbay-cli"
+version = "0.1.0"
+description = "Command-line interface for Patchbay"
+requires-python = ">=3.12"
+dependencies = ["typer>=0.12", "patchbay-core", "patchbay-sdk"]
+
+[project.scripts]
+patchbay = "patchbay_cli.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/patchbay_cli"]
