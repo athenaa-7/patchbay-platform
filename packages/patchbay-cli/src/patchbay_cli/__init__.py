@@ -1,0 +1,1 @@
+"""Patchbay command-line interface."""
