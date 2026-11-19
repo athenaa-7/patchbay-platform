@@ -1,11 +1,14 @@
 """Small local plugin manager for Phase 1."""
 from pathlib import Path
 from typing import Any
+
 from patchbay_sdk import PluginContext, PluginResult
+
 from patchbay_core.discovery import discover_plugins
 from patchbay_core.exceptions import PluginExecutionError, PluginLoadError
 from patchbay_core.loader import load_plugin
 from patchbay_core.validator import load_manifest
+
 
 class PluginManager:
     def __init__(self, plugin_root: Path, data_root: Path | None = None) -> None:

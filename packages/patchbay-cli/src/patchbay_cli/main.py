@@ -1,13 +1,16 @@
 """Patchbay CLI."""
 import json
 from pathlib import Path
+from typing import Annotated
 
 import typer
-
 from patchbay_core.exceptions import PatchbayError
 from patchbay_core.manager import PluginManager
 
-app = typer.Typer(help="Patchbay: connect, extend and create.")
+app = typer.Typer(
+    help="Patchbay: connect, extend and create.",
+    invoke_without_command=True,
+)
 plugin_app = typer.Typer(help="Manage local plugins.")
 app.add_typer(plugin_app, name="plugin")
 
@@ -36,7 +39,9 @@ def list_plugins() -> None:
 
 
 @plugin_app.command()
-def validate(path: Path = typer.Argument(..., exists=True, file_okay=False)) -> None:
+def validate(
+    path: Annotated[Path, typer.Argument(exists=True, file_okay=False)],
+) -> None:
     """Validate a plugin directory."""
     from patchbay_core.validator import load_manifest
 

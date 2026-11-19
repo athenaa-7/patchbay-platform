@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import pytest
 from patchbay_core.exceptions import ManifestError
 from patchbay_core.manager import PluginManager

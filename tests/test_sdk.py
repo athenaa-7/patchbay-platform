@@ -1,5 +1,6 @@
 from patchbay_sdk import PluginResult
 
+
 def test_success_result() -> None:
     result = PluginResult(status="success", data={"ok": True})
     assert result.status == "success"

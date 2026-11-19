@@ -1,6 +1,7 @@
 """Reference hello-world plugin."""
 from patchbay_sdk import PatchbayPlugin, PluginContext, PluginResult
 
+
 class HelloWorldPlugin(PatchbayPlugin):
     def initialize(self, context: PluginContext) -> None:
         self.context = context
