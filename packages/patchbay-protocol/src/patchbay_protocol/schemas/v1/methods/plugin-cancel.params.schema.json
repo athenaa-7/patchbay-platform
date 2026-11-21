@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:patchbay:protocol:v1:plugin-cancel-params",
+  "title": "Patchbay Plugin Cancellation",
+  "type": "object",
+  "required": ["execution_id"],
+  "properties": {
+    "execution_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  },
+  "additionalProperties": false
+}

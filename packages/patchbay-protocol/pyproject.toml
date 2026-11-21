@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "patchbay-protocol"
+version = "0.1.0"
+description = "Language-independent communication protocol for Patchbay plugins"
+requires-python = ">=3.12"
+dependencies = [
+    "jsonschema>=4.23",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/patchbay_protocol"]
+artifacts = ["src/patchbay_protocol/schemas/**/*.json"]

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:patchbay:protocol:v1:host-capability-invoke-params",
+  "title": "Patchbay Host Capability Invocation",
+  "type": "object",
+  "required": [
+    "execution_id",
+    "capability",
+    "operation",
+    "input"
+  ],
+  "properties": {
+    "execution_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "capability": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z0-9]+)+$"
+    },
+    "operation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "input": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

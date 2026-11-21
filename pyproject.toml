@@ -9,14 +9,24 @@ dependencies = []
 package = false
 
 [tool.uv.workspace]
-members = ["packages/patchbay-sdk", "packages/patchbay-core", "packages/patchbay-cli"]
+members = [
+    "packages/patchbay-sdk",
+    "packages/patchbay-core",
+    "packages/patchbay-cli",
+    "packages/patchbay-protocol",
+]
 
 [tool.uv.sources]
 patchbay-sdk = { workspace = true }
 patchbay-core = { workspace = true }
+patchbay-protocol = { workspace = true }
 
 [dependency-groups]
-dev = ["pytest>=8.0", "ruff>=0.6"]
+dev = [
+    "jsonschema>=4.26.0",
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

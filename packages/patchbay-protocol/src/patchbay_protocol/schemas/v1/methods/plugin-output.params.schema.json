@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:patchbay:protocol:v1:plugin-output-params",
+  "title": "Patchbay Plugin Streaming Output",
+  "type": "object",
+  "required": [
+    "execution_id",
+    "sequence",
+    "content_type",
+    "chunk"
+  ],
+  "properties": {
+    "execution_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "text/plain",
+        "application/json"
+      ]
+    },
+    "chunk": {},
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

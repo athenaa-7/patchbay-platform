@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:patchbay:protocol:v1:plugin-execute-params",
+  "title": "Patchbay Plugin Execution Parameters",
+  "description": "Parameters sent by Patchbay Core to execute a plugin operation.",
+  "type": "object",
+  "required": [
+    "execution_id",
+    "input",
+    "timeout_ms"
+  ],
+  "properties": {
+    "execution_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "input": {
+      "type": "object",
+      "description": "JSON-compatible plugin execution input."
+    },
+    "timeout_ms": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum execution time allowed in milliseconds."
+    }
+  },
+  "additionalProperties": false
+}

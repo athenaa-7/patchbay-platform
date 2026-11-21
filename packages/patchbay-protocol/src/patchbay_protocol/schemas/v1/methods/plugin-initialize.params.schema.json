@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:patchbay:protocol:v1:plugin-initialize-params",
+  "title": "Patchbay Plugin Initialization Parameters",
+  "description": "Parameters sent by Patchbay Core when initializing a plugin worker.",
+  "type": "object",
+  "required": [
+    "protocol_version",
+    "host_api_version",
+    "plugin_id",
+    "configuration",
+    "granted_capabilities"
+  ],
+  "properties": {
+    "protocol_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "host_api_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]*$"
+    },
+    "configuration": {
+      "type": "object",
+      "description": "Plugin-specific configuration."
+    },
+    "granted_capabilities": {
+      "type": "array",
+      "description": "Capabilities explicitly granted by the host.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}

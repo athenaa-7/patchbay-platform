@@ -7,7 +7,7 @@ name = "patchbay-core"
 version = "0.1.0"
 description = "Local plugin engine for Patchbay"
 requires-python = ">=3.12"
-dependencies = ["pydantic>=2.7", "patchbay-sdk"]
+dependencies = ["pydantic>=2.7", "patchbay-sdk","patchbay-protocol"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/patchbay_core"]
