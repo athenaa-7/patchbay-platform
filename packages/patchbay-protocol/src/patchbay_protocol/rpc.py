@@ -49,11 +49,16 @@ class JsonRpcPeer:
 
         self._closed = False
         self._failure: Exception | None = None
+        self._closed_event = asyncio.Event()
 
     @property
     def is_closed(self) -> bool:
         """Whether the connection has closed."""
         return self._closed
+
+    async def wait_closed(self) -> None:
+        """Wait until the RPC connection closes or fails."""
+        await self._closed_event.wait()
 
     def start(self) -> None:
         """Start the background message reader."""
@@ -131,10 +136,12 @@ class JsonRpcPeer:
                 asyncio.shield(future),
                 timeout=timeout,
             )
+
         except TimeoutError as exc:
             raise TimeoutError(
                 f"RPC request timed out: {method}"
             ) from exc
+
         finally:
             self._pending.pop(request_id, None)
 
@@ -176,6 +183,7 @@ class JsonRpcPeer:
             while not self._closed:
                 try:
                     line = await self._reader.readline()
+
                 except (ValueError, asyncio.LimitOverrunError) as exc:
                     raise ProtocolFramingError(
                         "Incoming NDJSON frame exceeded the stream limit"
@@ -209,6 +217,7 @@ class JsonRpcPeer:
 
         except asyncio.CancelledError:
             raise
+
         except Exception as exc:
             self._fail(exc)
 
@@ -241,6 +250,7 @@ class JsonRpcPeer:
             return
 
         exc = task.exception()
+
         if exc is not None:
             logger.error(
                 "Unexpected RPC handler failure",
@@ -286,6 +296,7 @@ class JsonRpcPeer:
                 retryable=exc.retryable,
                 data=exc.data,
             )
+
         except Exception:
             logger.exception("RPC handler failed: %s", method)
 
@@ -330,6 +341,7 @@ class JsonRpcPeer:
 
         if "error" in message:
             error = message["error"]
+
             future.set_exception(
                 RpcRemoteError(
                     code=error["code"],
@@ -337,6 +349,7 @@ class JsonRpcPeer:
                     data=error.get("data", {}),
                 )
             )
+
         else:
             future.set_result(message["result"])
 
@@ -376,6 +389,7 @@ class JsonRpcPeer:
 
         self._closed = True
         self._failure = exc
+        self._closed_event.set()
 
         for future in self._pending.values():
             if not future.done():
@@ -394,13 +408,15 @@ class JsonRpcPeer:
         if self._reader_task is not None:
             if self._reader_task is not current:
                 self._reader_task.cancel()
+
                 await asyncio.gather(
                     self._reader_task,
                     return_exceptions=True,
                 )
 
         tasks = [
-            task for task in self._dispatch_tasks
+            task
+            for task in self._dispatch_tasks
             if task is not current
         ]
 
@@ -415,5 +431,7 @@ class JsonRpcPeer:
 
         try:
             await self._writer.wait_closed()
-        except (ConnectionError, OSError):
+
+        except (ConnectionError, OSError, NotImplementedError):
+            # Some custom asyncio protocols do not implement wait_closed().
             pass

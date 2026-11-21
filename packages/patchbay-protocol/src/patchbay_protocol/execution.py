@@ -21,6 +21,7 @@ class _ExecutionRecord:
     task: asyncio.Task[dict[str, Any]]
     cancellation_event: asyncio.Event
     reason: str | None = None
+    worker_termination_required: bool = False
 
 
 class ExecutionRegistry:
@@ -129,15 +130,13 @@ class ExecutionRegistry:
                     asyncio.shield(task),
                     timeout=timeout_ms / 1000,
                 )
+
             except TimeoutError as exc:
                 record.reason = "timeout"
                 await self._request_cancellation(record)
-                raise RpcMethodError(
-                    code=-32003,
-                    message="Execution timed out",
-                    data={"execution_id": execution_id},
-                    retryable=True,
-                ) from exc
+
+                raise self._timeout_error(record) from exc
+
             except asyncio.CancelledError as exc:
                 if record.reason == "cancelled":
                     raise self._cancellation_error(record) from exc
@@ -170,7 +169,10 @@ class ExecutionRegistry:
             if task.done():
                 await self._remove_record(record)
 
-    async def cancel(self, execution_id: str) -> dict[str, Any]:
+    async def cancel(
+        self,
+        execution_id: str,
+    ) -> dict[str, Any]:
         """Request cancellation of one active execution."""
         async with self._lock:
             record = self._active.get(execution_id)
@@ -199,6 +201,7 @@ class ExecutionRegistry:
         record.cancellation_event.set()
 
         if record.task.done():
+            record.worker_termination_required = False
             return True
 
         try:
@@ -206,13 +209,21 @@ class ExecutionRegistry:
                 asyncio.shield(record.task),
                 timeout=self._grace,
             )
+
+            record.worker_termination_required = False
             return True
+
         except TimeoutError:
             record.task.cancel()
+            record.worker_termination_required = True
             return False
+
         except asyncio.CancelledError:
+            record.worker_termination_required = False
             return True
+
         except Exception:
+            record.worker_termination_required = False
             return True
 
     async def _remove_record(
@@ -232,7 +243,12 @@ class ExecutionRegistry:
         return RpcMethodError(
             code=-32007,
             message="Execution cancelled",
-            data={"execution_id": record.execution_id},
+            data={
+                "execution_id": record.execution_id,
+                "worker_termination_required": (
+                    record.worker_termination_required
+                ),
+            },
             retryable=False,
         )
 
@@ -244,6 +260,11 @@ class ExecutionRegistry:
         return RpcMethodError(
             code=-32003,
             message="Execution timed out",
-            data={"execution_id": record.execution_id},
+            data={
+                "execution_id": record.execution_id,
+                "worker_termination_required": (
+                    record.worker_termination_required
+                ),
+            },
             retryable=True,
         )
