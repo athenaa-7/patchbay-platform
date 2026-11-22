@@ -195,25 +195,45 @@ The protocol and runtime must enforce the following requirements:
 
 Untrusted plugins must execute outside the host process with appropriate operating-system isolation.
 
-## 10. Implementation Boundary
+## 10. Implementation Status and Boundary
 
-The current Patchbay runtime remains in-process.
+**Specification status: Draft.** This document describes the intended language-independent protocol. The current implementation supports an initial subset and must not be treated as complete protocol conformance.
 
-This document defines the target communication protocol.
+### 10.1 Implemented foundation
 
-The isolated worker architecture is not considered implemented until:
+The repository currently includes:
 
-- Worker process creation is implemented.
-- Host-worker communication is implemented.
-- Protocol validation is implemented.
-- Execution timeouts are enforced.
-- Capability checks are enforced.
-- Cancellation is tested.
-- Worker failure handling is tested.
-- Integration tests pass.
+- A Python `patchbay-protocol` package.
+- JSON-RPC 2.0 message encoding and decoding.
+- NDJSON framing over stdio.
+- JSON Schema validation for the implemented message envelope and selected method parameters.
+- A bidirectional asynchronous RPC peer with request correlation.
+- Execution tracking, timeout handling and cooperative cancellation.
+- A Python worker entry point that can initialize, execute and shut down a plugin in a separate subprocess.
+- A worker integration test covering the Hello World plugin lifecycle.
+
+### 10.2 Not yet implemented or complete
+
+The following remain incomplete:
+
+- A reusable host-side worker manager and process supervisor.
+- Integration of the managed worker runtime into the normal CLI execution path.
+- Reliable process termination escalation for uncooperative plugin code.
+- Comprehensive worker crash monitoring and recovery.
+- Host-side capability brokering and enforceable permission checks.
+- Operating-system-level filesystem, network, credential and resource isolation.
+- Full implementation and conformance testing of all proposed protocol methods and features.
+- Complete protocol and host API compatibility negotiation.
+
+The current worker validates the protocol version and plugin identity during initialization. Host API compatibility enforcement still needs to be completed.
+
+### 10.3 Security boundary
 
 The existing trusted-local Python plugin loader must not be presented as a sandbox.
 
+The subprocess worker provides process separation, but does not by itself restrict the operating-system permissions available to plugin code. Do not execute untrusted plugins through the current prototype.
+
+The protocol remains a draft and may change as implementation and conformance testing progress.
 ---
 
 ## 11. Transport Rules

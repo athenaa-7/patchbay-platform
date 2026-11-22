@@ -2,9 +2,12 @@ name: tests
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - feat/ai-plugin-architecture
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   test:
